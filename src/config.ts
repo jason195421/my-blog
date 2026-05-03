@@ -162,10 +162,10 @@ export const siteConfig: SiteConfig = {
 
 		homeText: {
 			enable: true, // 在主页显示自定义文本
-			title: "わたしの部屋", // 主页横幅主标题
+			title: "jasonのblog", // 主页横幅主标题
 
 			subtitle: [
-				"特別なことはないけど、君がいると十分です",
+				"The end is always good ,if it is not good, it is not the end.",
 				"今でもあなたは私の光",
 				"君ってさ、知らないうちに私の毎日になってたよ",
 				"君と話すと、なんか毎日がちょっと楽しくなるんだ",
