@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to right, #FFF0F5, #F0F8FF);
+      padding: 20px;
+      font-family: "Fredoka One", sans-serif;
+    }
+    .letter {
+      position: relative;
+      margin: 0 5px;
+      font-size: 60px;
+      color: #6A0DAD;
+      -webkit-text-stroke: 2px #6A0DAD; /* 文字描边 */
+    }
+    /* 渐变文字（J、s、o、n、B、g） */
+    .gradient {
+      background: linear-gradient(to right, #FFC0CB, #ADD8E6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    /* 猫耳女孩（J内） */
+    .j-girl {
+      position: absolute;
+      left: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      background: url('girl.png') no-repeat; /* 替换为女孩图标 */
+      background-size: contain;
+    }
+    /* 游戏机（o内） */
+    .o-game {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 30px;
+      background: url('game.png') no-repeat; /* 替换为游戏机图标 */
+      background-size: contain;
+    }
+    /* 星星装饰 */
+    .star {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #87CEEB;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    }
+    .star1 { top: -10px; left: -10px; }
+    .star2 { top: -10px; right: -10px; }
+    .star3 { bottom: -10px; left: -10px; }
+    .star4 { bottom: -10px; right: -10px; }
+    /* 心形装饰 */
+    .heart {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #FFB6C1;
+      transform: rotate(-45deg);
+    }
+    .heart::before, .heart::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #FFB6C1;
+      border-radius: 50%;
+    }
+    .heart::before { top: -4px; left: 0; }
+    .heart::after { top: 0; left: 4px; }
+    .heart1 { top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); }
+  </style>
+  <!-- 引入圆润字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="banner">
+    <!-- J -->
+    <div class="letter gradient">
+      J
+      <div class="j-girl"></div> <!-- 猫耳女孩 -->
+      <div class="star star1"></div>
+      <div class="star star2"></div>
+      <div class="heart heart1"></div>
+    </div>
+    <!-- a -->
+    <div class="letter gradient">
+      a
+      <div class="heart heart1"></div>
+    </div>
+    <!-- s -->
+    <div class="letter gradient">s</div>
+    <!-- o（游戏机） -->
+    <div class="letter gradient">
+      o
+      <div class="o-game"></div> <!-- 游戏机 -->
+      <div class="star star3"></div>
+      <div class="star star4"></div>
+    </div>
+    <!-- n -->
+    <div class="letter gradient">n</div>
+    <!-- ' -->
+    <div class="letter" style="color: #FFC0CB; -webkit-text-stroke: 2px #6A0DAD;">'</div>
+    <!-- B -->
+    <div class="letter gradient">
+      B
+      <div class="heart heart1"></div>
+    </div>
+    <!-- l -->
+    <div class="letter" style="color: #FFC0CB; -webkit-text-stroke: 2px #6A0DAD;">l</div>
+    <!-- o -->
+    <div class="letter gradient">o</div>
+    <!-- g -->
+    <div class="letter gradient">
+      g
+      <div class="heart heart1"></div>
+    </div>
+  </div>
+</body>
+</html>
