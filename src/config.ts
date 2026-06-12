@@ -290,10 +290,10 @@ export const navBarConfig: NavBarConfig = {
 					icon: "fa7-brands:bilibili",
 				},
 				{
-					name: "Gitee",
+					name: "coolapk",
 					url: "https://gitee.com/matsuzakayuki/Mizuki",
 					external: true,
-					icon: "mdi:git",
+					icon: "fa7-brands:coolapk",
 				},
 			],
 		},
