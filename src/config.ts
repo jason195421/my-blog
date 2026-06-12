@@ -293,7 +293,7 @@ export const navBarConfig: NavBarConfig = {
 					name: "coolapk",
 					url: "https://gitee.com/matsuzakayuki/Mizuki",
 					external: true,
-					icon: "simple-icons:coolapk",
+					icon: "arcticons:coolapk",
 				},
 			],
 		},
