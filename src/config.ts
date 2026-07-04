@@ -379,7 +379,7 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "Bilibili",
 			icon: "fa7-brands:bilibili",
-			url: "https://space.bilibili.com/701864046",
+			url: "https://space.bilibili.com/2092181443",
 		},
 		{
 			name: "Gitee",
@@ -389,7 +389,7 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "GitHub",
 			icon: "fa7-brands:github",
-			url: "https://github.com/matsuzaka-yuki",
+			url: "https://github.com/jason195421",
 		},
 		{
 			name: "Codeberg",
@@ -640,7 +640,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 };
 
 export const sakuraConfig: SakuraConfig = {
-	enable: false, // 默认关闭樱花特效
+	enable: ture, // 默认关闭樱花特效
 	sakuraNum: 21, // 樱花数量
 	limitTimes: -1, // 樱花越界限制次数，-1为无限循环
 	size: {
