@@ -108,6 +108,16 @@ export interface SiteConfig {
 		};
 	};
 
+	// 顶栏字体切换：访客可在这些字体之间自由切换（第一个为默认）
+	fontSwitch?: {
+		enable: boolean;
+		fonts: {
+			id: string; // 存储用标识，会写入 <html data-font="id">
+			label: string; // 按钮菜单里显示的名字
+			fontFamily: string; // 完整字体栈
+		}[];
+	};
+
 	// 添加bangumi配置
 	bangumi?: {
 		userId?: string; // Bangumi用户ID

@@ -92,8 +92,7 @@ const favicons: Favicon[] =
 	))
 }
 
-<!-- 字体通过构建脚本压缩到 /assets/font/ 目录，此处不再预加载以避免 404 -->
-<!-- 字体在构建时通过 scripts/compress-fonts.js 处理并复制到 dist/ -->
+<!-- 全站使用系统宋体（字体栈见 src/config.ts 的 font 配置），不再加载本地字体文件 -->
 
 <!-- 预连接 Iconify API 以减少图标加载延迟 -->
 <link rel="preconnect" href="https://api.iconify.design" crossorigin />
@@ -135,6 +134,12 @@ const favicons: Favicon[] =
 	// Load the hue from local storage
 	const hue = localStorage.getItem("hue") || configHue;
 	document.documentElement.style.setProperty("--hue", hue);
+
+	// 顶栏字体切换：尽早应用本地保存的字体，避免刷新时字体闪动
+	const storedFont = localStorage.getItem("fontFamily");
+	if (storedFont) {
+		document.documentElement.setAttribute("data-font", storedFont);
+	}
 
 	// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
 	let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));

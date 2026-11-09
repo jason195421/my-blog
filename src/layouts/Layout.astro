@@ -122,17 +122,35 @@ const bannerOffset =
 let bodyFontFamily = "";
 if (siteConfig.font) {
 	const fonts: string[] = [];
+	// 字体名归一化：已经是字体栈（含逗号）时原样使用；含空格的名字加引号
+	const normalizeFontFamily = (fontFamily: string) => {
+		const name = fontFamily.trim();
+		if (!name) {
+			return "";
+		}
+		if (name.includes(",")) {
+			return name;
+		}
+		return name.includes(" ") ? `"${name}"` : name;
+	};
+
 	// 先添加 ASCII 字体（优先级最高）
 	if (siteConfig.font.asciiFont?.fontFamily) {
-		const asciiFont = siteConfig.font.asciiFont.fontFamily;
-		// 如果字体名包含空格，需要用引号包围
-		fonts.push(asciiFont.includes(" ") ? `"${asciiFont}"` : asciiFont);
+		const asciiFont = normalizeFontFamily(
+			siteConfig.font.asciiFont.fontFamily,
+		);
+		if (asciiFont) {
+			fonts.push(asciiFont);
+		}
 	}
 	// 再添加 CJK 字体（作为回退）
 	if (siteConfig.font.cjkFont?.fontFamily) {
-		const cjkFont = siteConfig.font.cjkFont.fontFamily;
-		// 如果字体名包含空格，需要用引号包围
-		fonts.push(cjkFont.includes(" ") ? `"${cjkFont}"` : cjkFont);
+		const cjkFont = normalizeFontFamily(
+			siteConfig.font.cjkFont.fontFamily,
+		);
+		if (cjkFont) {
+			fonts.push(cjkFont);
+		}
 	}
 	// 添加系统字体作为最终回退
 	fonts.push(
@@ -151,6 +169,20 @@ if (siteConfig.font) {
 	// 组合成完整的 font-family 字符串
 	bodyFontFamily = fonts.join(", ");
 }
+
+	// 顶栏字体切换：把每个可选字体生成一条 CSS 规则，切换组件只需改 <html data-font>
+	const fontSwitchOptions = siteConfig.fontSwitch?.enable
+		? siteConfig.fontSwitch.fonts
+		: [];
+	const fontCss = [
+		bodyFontFamily ? `body { font-family: ${bodyFontFamily}; }` : "",
+		...fontSwitchOptions.map(
+			(font) =>
+				`html[data-font="${font.id}"] body { font-family: ${font.fontFamily}; }`,
+		),
+	]
+		.filter(Boolean)
+		.join("\n");
 ---
 
 <!doctype html>
@@ -187,6 +219,9 @@ if (siteConfig.font) {
 			}}
 		></style>
 
+		<!-- 字体规则：默认字体 + 顶栏字体切换的可选项 -->
+		{fontCss && <Fragment set:html={`<style>${fontCss}</style>`} />}
+
 		<!-- Pio 看板娘样式 - 非渲染阻塞加载 -->
 		{
 			pioConfig.enable && (
@@ -208,7 +243,6 @@ if (siteConfig.font) {
 		class:list={[
 			{ "lg:is-home": isHomePage, "enable-banner": enableBanner },
 		]}
-		style={bodyFontFamily ? `font-family: ${bodyFontFamily};` : ""}
 		data-overlayscrollbars-initialize
 	>
 		<noscript
