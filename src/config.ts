@@ -253,6 +253,13 @@ export const siteConfig: SiteConfig = {
 				fontFamily:
 					'"Kaiti SC", "KaiTi", "STKaiti", "楷体", "Songti SC", 宋体, serif',
 			},
+			{
+				id: "loli",
+				label: "萝莉体",
+				// 本地 woff2 字体，@font-face 定义在 src/styles/main.css
+				fontFamily:
+					'"萝莉体 第二版", "Songti SC", "SimSun", 宋体, serif',
+			},
 		],
 	},
 	showLastModified: true, // 控制"上次编辑"卡片显示的开关

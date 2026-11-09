@@ -26,7 +26,15 @@
   --breakpoint-xl: 1920px;
 }
 
-/* 字体：全站使用系统宋体（衬线体），字体栈在 src/config.ts 的 font 配置中定义，无需本地 @font-face */
+/* 默认字体为系统宋体，字体栈在 src/config.ts 的 font 配置中定义 */
+/* 萝莉体：供顶栏字体切换使用，采用 GB2312 一级字库子集（约 834KB），按需加载 */
+@font-face {
+  font-family: "萝莉体 第二版";
+  src: url("/assets/font/loli.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
 
 /* 确保平滑滚动，并稳定滚动条宽度以避免布局左右抖动 */
 html {

@@ -72,7 +72,7 @@
 	});
 </script>
 
-<div class="font-switch" bind:this={container}>
+<div class="font-switch" class:is-open={open} bind:this={container}>
 	<button
 		type="button"
 		id="font-switch"
@@ -85,34 +85,37 @@
 	>
 		<Icon
 			icon="material-symbols:font-download-outline-rounded"
-			class="text-[1.25rem]"
+			class="text-[1.25rem] font-switch-icon"
 		></Icon>
 	</button>
 
-	{#if open}
-		<div class="font-menu" role="menu" aria-labelledby="font-switch">
-			{#each options as option (option.id)}
-				<button
-					type="button"
-					role="menuitemradio"
-					aria-checked={current === option.id}
-					class="font-menu-item"
-					class:is-active={current === option.id}
-					onclick={() => choose(option)}
+	<!-- 菜单常驻 DOM，用 class 控制显隐，进出都能走 CSS 过渡 -->
+	<div
+		class="font-menu"
+		role="menu"
+		aria-labelledby="font-switch"
+		aria-hidden={!open}
+	>
+		{#each options as option, i (option.id)}
+			<button
+				type="button"
+				role="menuitemradio"
+				aria-checked={current === option.id}
+				class="font-menu-item"
+				class:is-active={current === option.id}
+				style={`--stagger: ${i * 45}ms`}
+				onclick={() => choose(option)}
+			>
+				<span style={`font-family: ${option.fontFamily}`}
+					>{option.label}</span
 				>
-					<span style={`font-family: ${option.fontFamily}`}
-						>{option.label}</span
-					>
-					{#if current === option.id}
-						<Icon
-							icon="material-symbols:check-rounded"
-							class="text-[1.1rem]"
-						></Icon>
-					{/if}
-				</button>
-			{/each}
-		</div>
-	{/if}
+				<Icon
+					icon="material-symbols:check-rounded"
+					class="text-[1.1rem] font-check"
+				></Icon>
+			</button>
+		{/each}
+	</div>
 </div>
 
 <style>
@@ -131,6 +134,28 @@
 		background: var(--float-panel-bg);
 		border: 1px solid rgba(0, 0, 0, 0.05);
 		box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+
+		/* 收起态：淡出 + 上移 + 轻微缩小 */
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(-8px) scale(0.96);
+		transform-origin: top right;
+		pointer-events: none;
+		transition:
+			opacity 200ms ease,
+			transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+			visibility 0s 260ms;
+	}
+
+	.font-switch.is-open .font-menu {
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0) scale(1);
+		pointer-events: auto;
+		transition:
+			opacity 200ms ease,
+			transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+			visibility 0s 0s;
 	}
 
 	:global(.dark) .font-menu {
@@ -150,9 +175,20 @@
 		line-height: 1.5;
 		color: rgb(0 0 0 / 0.75);
 		cursor: pointer;
+
+		/* 交错入场：打开菜单时依次滑入 */
+		opacity: 0;
+		transform: translateX(8px);
 		transition:
+			opacity 200ms ease var(--stagger, 0ms),
+			transform 240ms cubic-bezier(0.16, 1, 0.3, 1) var(--stagger, 0ms),
 			background-color 150ms ease,
 			color 150ms ease;
+	}
+
+	.font-switch.is-open .font-menu-item {
+		opacity: 1;
+		transform: translateX(0);
 	}
 
 	:global(.dark) .font-menu-item {
@@ -166,5 +202,42 @@
 
 	.font-menu-item.is-active {
 		color: var(--primary);
+	}
+
+	/* 选中项的勾：弹入 / 淡出 */
+	:global(.font-check) {
+		opacity: 0;
+		transform: scale(0.5);
+		transition:
+			opacity 180ms ease,
+			transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	.font-menu-item.is-active :global(.font-check) {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	/* 按钮图标：打开时轻微旋转并高亮 */
+	:global(.font-switch-icon) {
+		transition:
+			transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1),
+			color 200ms ease;
+	}
+
+	.font-switch.is-open :global(.font-switch-icon) {
+		transform: rotate(-15deg) scale(1.12);
+		color: var(--primary);
+	}
+
+	/* 尊重系统「减少动态效果」设置 */
+	@media (prefers-reduced-motion: reduce) {
+		.font-menu,
+		.font-menu-item,
+		:global(.font-check),
+		:global(.font-switch-icon) {
+			transition-duration: 0.01ms !important;
+			animation-duration: 0.01ms !important;
+		}
 	}
 </style>
