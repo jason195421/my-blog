@@ -64,40 +64,22 @@ export async function GET(context: APIContext) {
 			) {
 				let importPath: string | null = null;
 
+				// Resolve relative to the entry file's own directory so posts stored as
+				// <slug>/index.md pick up <slug>/images/... correctly
+				const entryDir = post.filePath
+					? post.filePath.replace(/\\/g, "/").split("/").slice(0, -1).join("/")
+					: "src/content/posts";
+
 				if (src.startsWith("./")) {
 					// Path relative to the post file directory
-					const prefixRemoved = src.slice(2);
-					// Check if this post is in a subdirectory (like bestimageapi/index.md)
-					const postPath = post.id; // This gives us the full path like "bestimageapi/index.md"
-					const postDir = postPath.includes("/")
-						? postPath.split("/")[0]
-						: "";
-
-					if (postDir) {
-						// For posts in subdirectories
-						importPath = `/src/content/posts/${postDir}/${prefixRemoved}`;
-					} else {
-						// For posts directly in posts directory
-						importPath = `/src/content/posts/${prefixRemoved}`;
-					}
+					importPath = `/${entryDir}/${src.slice(2)}`;
 				} else if (src.startsWith("../")) {
 					// Path like ../assets/images/xxx -> relative to /src/content/
 					const cleaned = src.replace(/^\.\.\//, "");
 					importPath = `/src/content/${cleaned}`;
 				} else {
-					// Handle direct filename (no ./ prefix) - assume it's in the same directory as the post
-					const postPath = post.id; // This gives us the full path like "bestimageapi/index.md"
-					const postDir = postPath.includes("/")
-						? postPath.split("/")[0]
-						: "";
-
-					if (postDir) {
-						// For posts in subdirectories
-						importPath = `/src/content/posts/${postDir}/${src}`;
-					} else {
-						// For posts directly in posts directory
-						importPath = `/src/content/posts/${src}`;
-					}
+					// Handle direct filename (no ./ prefix) - same directory as the post
+					importPath = `/${entryDir}/${src}`;
 				}
 
 				const imageMod = await imagesGlob[importPath]?.()?.then(

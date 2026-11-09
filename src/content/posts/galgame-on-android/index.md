@@ -10,8 +10,6 @@ sourceLink: "https://mp.weixin.qq.com/s/QUXH7zM8xx5Gv8rPGo5VWg"
 draft: false
 ---
 
-note：刷课教程被下了，明天补档。
-
 科普链接：什么是 galgame：
 
 > https://zh.moegirl.org.cn/Galgame
@@ -44,7 +42,7 @@ note：刷课教程被下了，明天补档。
 
 ![.pfs 文件](./images/02.jpg)
 
-### -1.3 ONEScripte
+### -1.4 ONEScripte
 
 其最显著的特征是解压后里面 `.nsa`。
 
