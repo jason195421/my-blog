@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 
+import { siteConfig } from "../../../config";
 import { LinkPresets } from "../../../constants/link-presets";
 import I18nKey from "../../../i18n/i18nKey";
 import { i18n } from "../../../i18n/translation";
@@ -30,6 +31,11 @@ const getLocalizedName = (name: string): string => {
 	}
 	return name;
 };
+
+// 移动端（汉堡菜单）字体切换：与顶栏 FontSwitch 共用同一份配置与本地存储
+const fontOptions = siteConfig.fontSwitch?.enable
+	? siteConfig.fontSwitch.fonts
+	: [];
 
 const processedLinks: ProcessedNavBarLink[] = (
 	Astro.props as NavMenuPanelProps
@@ -144,6 +150,30 @@ const processedLinks: ProcessedNavBarLink[] = (
 			</div>
 		))
 	}
+
+	<!-- 移动端字体切换：顶栏太窄放不下按钮，改在汉堡菜单里横排展示 -->
+	{
+		fontOptions.length > 0 && (
+			<div class="mobile-font-section">
+				<div class="mobile-font-label">
+					<Icon name="material-symbols:font-download-outline-rounded" class="text-[1.1rem] mr-2" />
+					字体
+				</div>
+				<div class="mobile-font-options" role="group" aria-label="字体切换">
+					{fontOptions.map((font) => (
+						<button
+							type="button"
+							class="mobile-font-option"
+							data-font-option={font.id}
+							style={`font-family: ${font.fontFamily}`}
+						>
+							{font.label}
+						</button>
+					))}
+				</div>
+			</div>
+		)
+	}
 </div>
 
 <style>
@@ -159,6 +189,73 @@ const processedLinks: ProcessedNavBarLink[] = (
 
 	.mobile-dropdown[data-expanded="true"] .mobile-dropdown-arrow {
 		@apply rotate-180;
+	}
+
+	/* 移动端字体切换区块 */
+	.mobile-font-section {
+		margin-top: 0.5rem;
+		padding: 0.625rem 0.25rem 0.25rem;
+		border-top: 1px solid rgb(0 0 0 / 0.08);
+		/* 汉堡面板默认只是 transform 隐藏（仍是已渲染 DOM），若这里预览本地字体，
+		   会让 854KB 的 woff2 在移动端首屏被强制下载。故仅在面板真正打开时
+		   才给字体按钮套用各自字体。 */
+		font-family: inherit;
+	}
+	:global(.dark) .mobile-font-section {
+		border-top-color: rgb(255 255 255 / 0.1);
+	}
+	.mobile-font-label {
+		display: flex;
+		align-items: center;
+		padding: 0 0.75rem 0.5rem;
+		font-size: 0.9rem;
+		font-weight: 700;
+		color: rgb(0 0 0 / 0.75);
+	}
+	:global(.dark) .mobile-font-label {
+		color: rgb(255 255 255 / 0.75);
+	}
+	.mobile-font-options {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.375rem;
+		padding: 0 0.5rem;
+	}
+	.mobile-font-option {
+		flex: 1 1 auto;
+		min-width: 4.25rem;
+		padding: 0.4rem 0.5rem;
+		border-radius: 0.5rem;
+		font-size: 0.9rem;
+		line-height: 1.4;
+		text-align: center;
+		color: rgb(0 0 0 / 0.65);
+		background: transparent;
+		cursor: pointer;
+		transition:
+			background-color 150ms ease,
+			color 150ms ease,
+			transform 150ms ease;
+	}
+	:global(.dark) .mobile-font-option {
+		color: rgb(255 255 255 / 0.65);
+	}
+	.mobile-font-option:hover {
+		background: var(--btn-plain-bg-hover);
+		color: var(--primary);
+	}
+	.mobile-font-option:active {
+		transform: scale(0.94);
+	}
+	.mobile-font-option.is-active {
+		background: var(--btn-regular-bg);
+		color: var(--primary);
+		font-weight: 700;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.mobile-font-option {
+			transition-duration: 0.01ms;
+		}
 	}
 </style>
 
@@ -201,4 +298,55 @@ const processedLinks: ProcessedNavBarLink[] = (
 			});
 		});
 	});
+
+	// 移动端字体切换：与顶栏 FontSwitch 共用 localStorage["fontFamily"] 和 <html data-font>
+	// 用 document 级事件委托，swup 替换面板内容后依然有效
+	(function initMobileFontSwitch() {
+		const KEY = "fontFamily";
+		const flag = "__mobileFontSwitchBound";
+		if ((window as any)[flag]) {
+			return;
+		}
+		(window as any)[flag] = true;
+
+		const sync = () => {
+			const buttons = document.querySelectorAll<HTMLButtonElement>(
+				"[data-font-option]",
+			);
+			if (buttons.length === 0) {
+				return;
+			}
+			const stored =
+				localStorage.getItem(KEY) ||
+				buttons[0].dataset.fontOption ||
+				"";
+			buttons.forEach((btn) => {
+				const active = btn.dataset.fontOption === stored;
+				btn.classList.toggle("is-active", active);
+				btn.setAttribute("aria-pressed", String(active));
+			});
+		};
+
+		document.addEventListener("click", (event) => {
+			const target = event.target;
+			if (!(target instanceof Element)) {
+				return;
+			}
+			const btn = target.closest<HTMLButtonElement>("[data-font-option]");
+			if (!btn || !btn.dataset.fontOption) {
+				return;
+			}
+			const id = btn.dataset.fontOption;
+			localStorage.setItem(KEY, id);
+			document.documentElement.setAttribute("data-font", id);
+			sync();
+			// 通知顶栏 FontSwitch 同步选中态（双向同步）
+			document.dispatchEvent(new CustomEvent("fontchange", { detail: id }));
+		});
+
+		document.addEventListener("fontchange", sync);
+		document.addEventListener("swup:page:view", sync);
+		document.addEventListener("DOMContentLoaded", sync);
+		sync();
+	})();
 </script>

@@ -28,6 +28,10 @@
 	function choose(option: FontOption) {
 		localStorage.setItem(STORAGE_KEY, option.id);
 		apply(option.id);
+		// 广播字体变化：移动端汉堡菜单、其它 FontSwitch 实例据此同步高亮
+		document.dispatchEvent(
+			new CustomEvent("fontchange", { detail: option.id }),
+		);
 		open = false;
 	}
 
@@ -45,6 +49,14 @@
 	onMount(() => {
 		syncFromStorage();
 
+		// 移动端汉堡菜单里切换字体时，同步本下拉菜单的选中态
+		const handleFontChange = (event: Event) => {
+			const id = (event as CustomEvent<string>).detail;
+			if (id && id !== current) {
+				current = id;
+			}
+		};
+
 		const handleClickOutside = (event: MouseEvent) => {
 			if (!open) {
 				return;
@@ -61,12 +73,14 @@
 
 		document.addEventListener("click", handleClickOutside);
 		document.addEventListener("keydown", handleKeydown);
+		document.addEventListener("fontchange", handleFontChange);
 		// Swup 切换页面后保持与本地存储一致
 		document.addEventListener("swup:page:view", syncFromStorage);
 
 		return () => {
 			document.removeEventListener("click", handleClickOutside);
 			document.removeEventListener("keydown", handleKeydown);
+			document.removeEventListener("fontchange", handleFontChange);
 			document.removeEventListener("swup:page:view", syncFromStorage);
 		};
 	});
